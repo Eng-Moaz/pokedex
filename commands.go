@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
-	"github.com/Eng-Moaz/pokedex/internal/pokecache"
+
+	pokecache "github.com/Eng-Moaz/pokedex/internal"
 )
 
 type CliCommand struct{
@@ -16,7 +18,7 @@ type Config struct{
 	Next *string
 	Previous *string
 	firstTime bool
-	cache Cache
+	cache pokecache.Cache
 }
 
 var AllCommands = map[string]CliCommand{
@@ -54,6 +56,7 @@ func commandHelp(cfg *Config) error{
 }
 
 func commandMap(cfg *Config) error{
+	var locationArea LocationAreaResponse
 	var apiUrl string
 	if cfg.firstTime{
 		apiUrl = "https://pokeapi.co/api/v2/location-area"
@@ -61,9 +64,17 @@ func commandMap(cfg *Config) error{
 	}else{
 		apiUrl = *cfg.Next
 	}
-	locationArea, err := ReqAndUnmarshal(apiUrl)
-	if err != nil{
-		return fmt.Errorf("Failed to get locationArea struct: %v", err)
+	if value, ok := cfg.cache.Get(apiUrl);ok{
+		err := json.Unmarshal(value, &locationArea)
+		if err != nil{
+			return fmt.Errorf("Couldn't Unmarshal: %v", err)
+		}
+	}else{
+		var err error
+		locationArea, err = ReqAndUnmarshal(apiUrl)
+		if err != nil{
+			return fmt.Errorf("Failed to get locationArea struct: %v", err)
+		}
 	}
 	for i := range 20{
 		fmt.Println(locationArea.Results[i].Name)
@@ -75,6 +86,7 @@ func commandMap(cfg *Config) error{
 
 
 func commandMapb(cfg *Config) error{
+	var locationArea LocationAreaResponse
 	var apiUrl string
 	if cfg.firstTime{
 		apiUrl = "https://pokeapi.co/api/v2/location-area"
@@ -82,9 +94,17 @@ func commandMapb(cfg *Config) error{
 	}else{
 		apiUrl = *cfg.Previous
 	}
-	locationArea, err := ReqAndUnmarshal(apiUrl)
-	if err != nil{
-		return fmt.Errorf("Failed to get locationArea struct: %v", err)
+	if value, ok := cfg.cache.Get(apiUrl);ok{
+		err := json.Unmarshal(value, &locationArea)
+		if err != nil{
+			return fmt.Errorf("Couldn't Unmarshal: %v", err)
+		}
+	}else{
+		var err error
+		locationArea, err = ReqAndUnmarshal(apiUrl)
+		if err != nil{
+			return fmt.Errorf("Failed to get locationArea struct: %v", err)
+		}
 	}
 	for i := range 20{
 		fmt.Println(locationArea.Results[i].Name)
@@ -93,4 +113,3 @@ func commandMapb(cfg *Config) error{
 	cfg.Previous = locationArea.Previous
 	return nil
 }
-

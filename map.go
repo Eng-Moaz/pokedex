@@ -41,3 +41,5 @@ func ReqAndUnmarshal(apiUrl string) (LocationAreaResponse, error){
 
 	return locationArea, nil
 }
+
+

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"github.com/Eng-Moaz/pokedex/internal/pokecache"
 )
 
 type CliCommand struct{
@@ -15,6 +16,7 @@ type Config struct{
 	Next *string
 	Previous *string
 	firstTime bool
+	cache Cache
 }
 
 var AllCommands = map[string]CliCommand{

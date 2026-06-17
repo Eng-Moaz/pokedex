@@ -1,13 +1,16 @@
 package main
 
 import (
-    "fmt"
+   "fmt"
     "os"
     "bufio"
     "strings"
     )
 
 func main(){
+	cfg := Config{
+		firstTime: true,
+	}
 	scanner := bufio.NewScanner(os.Stdin)
 
 		for {
@@ -32,7 +35,7 @@ func main(){
 				fmt.Println("Invalid command")
 				continue
 			}
-			cmd.callback()
+			cmd.callback(&cfg)
 		}
 	if err := scanner.Err(); err != nil {
 			fmt.Fprintln(os.Stderr, "Error reading standard input:", err)
